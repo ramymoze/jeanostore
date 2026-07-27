@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Navbar } from "@/components/navbar";
+import { CartProvider } from "@/components/cart-context";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
+import { LayoutWrapper } from "@/components/layout-wrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,10 +20,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={cn(inter.className, "bg-background text-foreground antialiased min-h-screen")}>
-        <Navbar />
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn(inter.className, "bg-background text-foreground antialiased min-h-screen transition-colors duration-300")}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <CartProvider>
+            <LayoutWrapper>
+              {children}
+            </LayoutWrapper>
+            <Toaster position="bottom-right" theme="system" />
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

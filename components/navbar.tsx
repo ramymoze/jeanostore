@@ -2,14 +2,25 @@
 
 import { useState, useEffect } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
-import { ShoppingBag, Search, Menu, User } from "lucide-react";
+import { ShoppingBag, Search, Menu, User, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/components/cart-context";
+import { useTheme } from "next-themes";
+import { SearchModal } from "@/components/search-modal";
 
 export function Navbar() {
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { setIsCartOpen, itemCount } = useCart();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (latest > 50) {
@@ -34,7 +45,7 @@ export function Navbar() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent",
         isScrolled || isMobileMenuOpen
-          ? "bg-background/80 backdrop-blur-md border-white/10 py-4 shadow-lg"
+          ? "bg-background/80 backdrop-blur-md border-border/10 py-4 shadow-lg"
           : "bg-transparent py-6"
       )}
     >
@@ -45,7 +56,7 @@ export function Navbar() {
            transition={{ delay: 0.4, duration: 0.5 }}
         >
           <Link href="/" className="text-2xl font-bold tracking-tighter flex items-center gap-1 group">
-            Jeano<span className="text-primary group-hover:text-white transition-colors">star</span>
+            Jeano<span className="text-primary group-hover:text-foreground transition-colors">star</span>
           </Link>
         </motion.div>
 
@@ -59,7 +70,7 @@ export function Navbar() {
             >
               <Link
                 href={item.href}
-                className="text-sm font-medium text-muted-foreground hover:text-white transition-colors relative group"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group"
               >
                 {item.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
@@ -74,15 +85,34 @@ export function Navbar() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
         >
-          <button className="p-2 text-muted-foreground hover:text-white transition-colors">
+          {mounted && (
+            <button
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted"
+            >
+              {resolvedTheme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+          )}
+
+          <button 
+            onClick={() => setIsSearchOpen(true)}
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
             <Search className="w-5 h-5" />
           </button>
-          <button className="p-2 text-muted-foreground hover:text-white transition-colors relative">
+          <button 
+            onClick={() => setIsCartOpen(true)}
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors relative"
+          >
             <ShoppingBag className="w-5 h-5" />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full" />
+            {itemCount > 0 && (
+              <span className="absolute top-0 right-0 w-4 h-4 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
           </button>
           <button 
-            className="p-2 text-muted-foreground hover:text-white transition-colors md:hidden"
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <Menu className="w-5 h-5" />
@@ -104,7 +134,7 @@ export function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-muted-foreground hover:text-white transition-colors border-b border-white/5 pb-4"
+              className="text-muted-foreground hover:text-foreground transition-colors border-b border-border/5 pb-4"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {item.name}
@@ -113,6 +143,8 @@ export function Navbar() {
         </div>
       </motion.div>
     )}
+
+    <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   );
 }

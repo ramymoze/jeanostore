@@ -51,7 +51,7 @@ export function HeroSection() {
             <ShoppingBag className="w-4 h-4" />
             Shop Now
           </Link>
-          <a href="#collections" className="h-12 px-8 rounded-full bg-secondary text-secondary-foreground border border-white/10 font-medium hover:bg-secondary/80 transition-all flex items-center justify-center gap-2 group backdrop-blur-sm">
+          <a href="#collections" className="h-12 px-8 rounded-full bg-secondary text-secondary-foreground border border-border/10 font-medium hover:bg-secondary/80 transition-all flex items-center justify-center gap-2 group backdrop-blur-sm">
             Explore Collection
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>

@@ -1,0 +1,262 @@
+"use client";
+
+import { useCart } from "@/components/cart-context";
+import { formatPrice } from "@/lib/data";
+import { motion } from "framer-motion";
+import { ArrowLeft, Truck, PackageCheck } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
+
+export default function CheckoutPage() {
+  const { items, cartTotal, clearCart } = useCart();
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const supabase = createClient();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const name = formData.get("name") as string;
+      const phone = formData.get("phone") as string;
+      const phone_2 = formData.get("phone_2") as string;
+      const wilaya = formData.get("wilaya") as string;
+      const commune = formData.get("commune") as string;
+      const adresse = formData.get("adresse") as string;
+
+      const baseOrderId = "ORD-" + Math.floor(1000 + Math.random() * 9000);
+
+      const orderRows = items.map((item, index) => {
+        return {
+          order_id: items.length > 1 ? `${baseOrderId}-${index + 1}` : baseOrderId,
+          name,
+          phone,
+          phone_2,
+          wilaya,
+          commune,
+          adresse,
+          product: item.name,
+          product_var: item.category || "Standard", 
+          quantity: item.quantity,
+          product_pr: item.price,
+          delivery_pric: 0, 
+          total_price: (item.price * item.quantity),
+          delivery_mod: "Domicile",
+        };
+      });
+
+      const { error } = await supabase.from('orders').insert(orderRows);
+
+      if (error) throw error;
+
+      clearCart();
+      router.push("/checkout/success");
+    } catch (error: any) {
+      console.error("Order submission error:", error);
+      toast.error(`Error placing order: ${error.message || "Unknown database error"}`);
+      setIsSubmitting(false);
+    }
+  };
+
+  if (items.length === 0) {
+    return (
+      <main className="min-h-screen bg-background text-foreground pt-32 px-4 flex flex-col items-center">
+        <PackageCheck className="w-20 h-20 text-muted-foreground mb-6" />
+        <h1 className="text-3xl font-bold mb-4">Your Cart is Empty</h1>
+        <p className="text-muted-foreground mb-8 text-center max-w-md">
+          Looks like you haven't added anything to your cart yet. Browse our collection to find your next favorite outfit.
+        </p>
+        <Link href="/shop" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-8 rounded-full transition-colors">
+          Return to Shop
+        </Link>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-background text-foreground pt-24 pb-16">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="mb-8">
+          <Link href="/shop" className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Continue Shopping
+          </Link>
+        </div>
+
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-4xl font-bold mb-10"
+        >
+          Checkout
+        </motion.h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* Order Form */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="lg:col-span-7"
+          >
+            <div className="bg-card border border-border/5 rounded-2xl p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-8 pb-4 border-b border-border/10">
+                <Truck className="w-6 h-6 text-primary" />
+                <h2 className="text-2xl font-bold">Shipping Information</h2>
+              </div>
+              
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-8">
+                <p className="text-sm font-medium text-primary">
+                  We currently only support <strong>Pay on Delivery</strong>. You will pay for your order when it arrives at your doorstep.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium text-muted-foreground">Full Name</label>
+                    <input 
+                      required
+                      type="text" 
+                      id="name" 
+                      name="name"
+                      className="w-full bg-background/40 border border-border/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                      placeholder="محمد بن عمر"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label htmlFor="phone" className="text-sm font-medium text-muted-foreground">Phone Number</label>
+                      <input 
+                        required
+                        type="tel" 
+                        id="phone" 
+                        name="phone"
+                        className="w-full bg-background/40 border border-border/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                        placeholder="0555 00 00 00"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="phone_2" className="text-sm font-medium text-muted-foreground">Phone Number 2 (Optional)</label>
+                      <input 
+                        type="tel" 
+                        id="phone_2" 
+                        name="phone_2"
+                        className="w-full bg-background/40 border border-border/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                        placeholder="0770 00 00 00"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label htmlFor="wilaya" className="text-sm font-medium text-muted-foreground">Wilaya</label>
+                      <input 
+                        required
+                        type="text" 
+                        id="wilaya" 
+                        name="wilaya"
+                        className="w-full bg-background/40 border border-border/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                        placeholder="Annaba"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="commune" className="text-sm font-medium text-muted-foreground">Commune</label>
+                      <input 
+                        required
+                        type="text" 
+                        id="commune" 
+                        name="commune"
+                        className="w-full bg-background/40 border border-border/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                        placeholder="Sidi Amar"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="adresse" className="text-sm font-medium text-muted-foreground">Shipping Address</label>
+                    <input 
+                      required
+                      type="text" 
+                      id="adresse" 
+                      name="adresse"
+                      className="w-full bg-background/40 border border-border/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                      placeholder="123 Main St, Apt 4B"
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-xl mt-8 flex justify-center items-center gap-2 transition-all disabled:opacity-70"
+                >
+                  {isSubmitting ? (
+                    <motion.div 
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                      className="w-5 h-5 border-2 border-border/30 border-t-white rounded-full"
+                    />
+                  ) : (
+                    <>Place Order (Pay on Delivery)</>
+                  )}
+                </button>
+              </form>
+            </div>
+          </motion.div>
+
+          {/* Order Summary */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-5"
+          >
+            <div className="bg-background/40 backdrop-blur-md border border-border/10 rounded-2xl p-6 md:p-8 sticky top-32">
+              <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+              
+              <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 scrollbar-hide">
+                {items.map(item => (
+                  <div key={item.id} className="flex gap-4">
+                    <div className="w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm text-foreground">{item.name}</h4>
+                      <p className="text-xs text-muted-foreground mb-1">Qty: {item.quantity}</p>
+                      <p className="font-bold text-sm">{formatPrice(item.price * item.quantity)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-border/10 pt-4 space-y-3">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(cartTotal)}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Shipping</span>
+                  <span>Free</span>
+                </div>
+                <div className="flex justify-between text-lg font-bold text-foreground pt-3 border-t border-border/10">
+                  <span>Total</span>
+                  <span className="text-primary">{formatPrice(cartTotal)}</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
+      </div>
+    </main>
+  );
+}

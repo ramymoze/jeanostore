@@ -79,12 +79,12 @@ export function FeaturedCategories() {
               <div className="absolute bottom-0 left-0 p-6 w-full">
                 <div className="flex justify-between items-end">
                   <div>
-                    <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-primary transition-colors">{category.name}</h3>
-                    <p className="text-white/70 text-sm transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                    <h3 className="text-2xl font-bold text-foreground mb-1 group-hover:text-primary transition-colors">{category.name}</h3>
+                    <p className="text-foreground/70 text-sm transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                       {category.description}
                     </p>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-primary group-hover:rotate-45 transition-all duration-300">
+                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-primary-foreground group-hover:bg-primary group-hover:rotate-45 transition-all duration-300">
                     <ArrowUpRight className="w-5 h-5" />
                   </div>
                 </div>
@@ -111,8 +111,8 @@ export function FeaturedCategories() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
 
               <div className="absolute bottom-0 left-0 p-6 w-full">
-                <h3 className="text-2xl font-bold text-white mb-1">{category.name}</h3>
-                <p className="text-white/70 text-sm">
+                <h3 className="text-2xl font-bold text-foreground mb-1">{category.name}</h3>
+                <p className="text-foreground/70 text-sm">
                   {category.description}
                 </p>
               </div>

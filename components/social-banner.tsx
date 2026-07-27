@@ -5,7 +5,7 @@ import { Instagram, ArrowRight } from "lucide-react";
 
 export function SocialBanner() {
   return (
-    <section className="py-12 bg-primary text-white relative overflow-hidden">
+    <section className="py-12 bg-primary text-primary-foreground relative overflow-hidden">
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
 
       <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
@@ -15,7 +15,7 @@ export function SocialBanner() {
              Join the inner circle.
            </h3>
            <span className="hidden md:inline-block w-px h-8 bg-white/30" />
-           <p className="text-white/80 font-medium">
+           <p className="text-foreground/80 font-medium">
              Follow us for exclusive drops and behind-the-scenes.
            </p>
         </div>
@@ -31,7 +31,7 @@ export function SocialBanner() {
           
           <a 
             href="#" 
-            className="flex items-center gap-2 px-6 py-3 bg-black/20 text-white border border-white/20 rounded-full font-bold hover:bg-black/30 transition-transform active:scale-95 backdrop-blur-sm"
+            className="flex items-center gap-2 px-6 py-3 bg-background/20 text-foreground border border-border/20 rounded-full font-bold hover:bg-background/30 transition-transform active:scale-95 backdrop-blur-sm"
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
