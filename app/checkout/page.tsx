@@ -45,10 +45,10 @@ export default function CheckoutPage() {
           commune,
           adresse,
           product: item.name,
-          product_var: item.category || "Standard", 
+          product_var: item.category || "Standard",
           quantity: item.quantity,
           product_pr: item.price,
-          delivery_pric: 0, 
+          delivery_pric: 0,
           total_price: (item.price * item.quantity),
           delivery_mod: delivery_mod || "Domicile",
         };
@@ -58,19 +58,30 @@ export default function CheckoutPage() {
 
       if (error) throw error;
 
+      // Build a separate clean payload for Google Sheets
+      const sheetsRows = items.map((item, index) => {
+        return {
+          ORDER_ID: items.length > 1 ? `${baseOrderId}-${index + 1}` : baseOrderId,
+          NAME: name,
+          PHONE: phone,
+          PRODUCT: item.name,
+          QUANTITY: item.quantity,
+          TOTAL_PRICE: (item.price * item.quantity),
+          WILAYA: wilaya,
+          COMMUNE: commune,
+          DELIVERY_MODE: delivery_mod || "Domicile",
+        };
+      });
+
       // Sync with Google Sheets securely
       try {
         await fetch("/api/orders", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orders: orderRows }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orders: sheetsRows }),
         });
       } catch (sheetError) {
         console.error("Failed to sync to Google Sheets:", sheetError);
-        // We do not block checkout success if the sheet sync fails,
-        // because the order is successfully saved in Supabase.
       }
 
       clearCart();
