@@ -59,7 +59,7 @@ export function Navbar() {
         >
           <Link href="/" className="text-2xl font-bold tracking-tighter flex items-center gap-2 group">
             <img src="/logo.png" alt="Silverwear Logo" className="w-8 h-8 rounded-full object-cover shadow-sm" />
-            <div>Silver<span className="text-primary group-hover:text-foreground transition-colors">wear</span></div>
+            <div className="text-foreground">Silver<span className="text-primary group-hover:text-foreground transition-colors">wear</span></div>
           </Link>
         </motion.div>
 

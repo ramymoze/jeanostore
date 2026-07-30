@@ -24,15 +24,19 @@ export function SocialBanner() {
 
         <div className="flex items-center gap-4">
           <a 
-            href="#" 
+            href="https://www.instagram.com/silverwear_dz?igsh=MTluYzltNm1ydjI1dg%3D%3D&utm_source=qr" 
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-full font-bold hover:bg-white/90 transition-transform active:scale-95 shadow-lg shadow-black/10"
           >
             <Instagram className="w-5 h-5" />
-            <span>@silverwear</span>
+            <span>@silverwear_dz</span>
           </a>
           
           <a 
-            href="#" 
+            href="https://www.tiktok.com/@silver.wear1?_r=1&_t=ZS-98MsNXsmBID" 
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 bg-background/20 text-foreground border border-border/20 rounded-full font-bold hover:bg-background/30 transition-transform active:scale-95 backdrop-blur-sm"
           >
             <svg 
@@ -48,7 +52,7 @@ export function SocialBanner() {
             >
               <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
             </svg>
-            <span>@silverwear_vibe</span>
+            <span>@silver.wear1</span>
           </a>
         </div>
 
