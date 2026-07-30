@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
             <ShieldCheck size={32} />
           </div>
           <h1 className="admin-login-title">Admin Portal</h1>
-          <p className="admin-login-subtitle">Jeanostar — Restricted Access</p>
+          <p className="admin-login-subtitle">Silverwear — Restricted Access</p>
         </div>
 
         {/* Form */}

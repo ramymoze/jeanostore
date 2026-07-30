@@ -229,7 +229,7 @@ export default function AdminDashboard() {
               {currentTab === "orders" && "Recent Orders"}
               {currentTab === "customers" && "Customer Directory"}
             </h1>
-            <p className="admin-dash-sub">Welcome back, Jeanostar Admin</p>
+            <p className="admin-dash-sub">Welcome back, Silverwear Admin</p>
           </div>
           {currentTab === "products" && (
             <button

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/components/cart-context";
 import { useTheme } from "next-themes";
 import { SearchModal } from "@/components/search-modal";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function Navbar() {
   const { scrollY } = useScroll();
@@ -17,6 +18,7 @@ export function Navbar() {
   const { setIsCartOpen, itemCount } = useCart();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { t, language, setLanguage } = useLanguage();
 
   useEffect(() => {
     setMounted(true);
@@ -31,9 +33,9 @@ export function Navbar() {
   });
 
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Shop", href: "/shop" },
-    { name: "About", href: "#" },
+    { name: t("nav.home"), href: "/" },
+    { name: t("nav.shop"), href: "/shop" },
+    { name: t("nav.about"), href: "#" },
   ];
 
   return (
@@ -55,8 +57,9 @@ export function Navbar() {
            animate={{ opacity: 1, x: 0 }}
            transition={{ delay: 0.4, duration: 0.5 }}
         >
-          <Link href="/" className="text-2xl font-bold tracking-tighter flex items-center gap-1 group">
-            Jeano<span className="text-primary group-hover:text-foreground transition-colors">star</span>
+          <Link href="/" className="text-2xl font-bold tracking-tighter flex items-center gap-2 group">
+            <img src="/logo.png" alt="Silverwear Logo" className="w-8 h-8 rounded-full object-cover shadow-sm" />
+            <div>Silver<span className="text-primary group-hover:text-foreground transition-colors">wear</span></div>
           </Link>
         </motion.div>
 
@@ -86,12 +89,21 @@ export function Navbar() {
           transition={{ delay: 0.4, duration: 0.5 }}
         >
           {mounted && (
-            <button
-              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted"
-            >
-              {resolvedTheme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
+            <>
+              <button
+                onClick={() => setLanguage(language === "en" ? "ar" : "en")}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted font-bold text-xs"
+                title="Toggle Language"
+              >
+                {language === "en" ? "عربي" : "EN"}
+              </button>
+              <button
+                onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted"
+              >
+                {resolvedTheme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+            </>
           )}
 
           <button 

@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { ShoppingBag, ArrowRight } from "lucide-react";
 
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function HeroSection() {
+  const { t } = useLanguage();
   return (
     <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-background to-background">
       <div className="absolute inset-0 w-full h-full bg-grid-white/[0.02] -z-10" />
@@ -16,9 +18,11 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
+          className="flex flex-col items-center"
         >
+            <img src="/logo.png" alt="Silverwear Logo" className="w-40 h-40 rounded-full object-cover mb-6 shadow-2xl shadow-primary/20" />
             <span className="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6 backdrop-blur-sm">
-              New Collection 2026
+              {t("hero.badge")}
             </span>
         </motion.div>
 
@@ -28,7 +32,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
         >
-          Jeano<span className="text-primary">star</span>
+          Silver<span className="text-primary">wear</span>
         </motion.h1>
 
         <motion.p
@@ -37,8 +41,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
           className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
         >
-          An online store that sells clothes designed for the bold and the elegant.
-          Elevate your style with our premium collection.
+          {t("hero.subtitle")}
         </motion.p>
 
         <motion.div
@@ -49,10 +52,10 @@ export function HeroSection() {
         >
           <Link href="/shop" className="h-12 px-8 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/25">
             <ShoppingBag className="w-4 h-4" />
-            Shop Now
+            {t("hero.shopNow")}
           </Link>
           <a href="#collections" className="h-12 px-8 rounded-full bg-secondary text-secondary-foreground border border-border/10 font-medium hover:bg-secondary/80 transition-all flex items-center justify-center gap-2 group backdrop-blur-sm">
-            Explore Collection
+            {t("hero.explore")}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
         </motion.div>
@@ -67,7 +70,7 @@ export function HeroSection() {
         }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-muted-foreground"
       >
-        <span className="text-sm uppercase tracking-widest font-medium">Scroll</span>
+        <span className="text-sm uppercase tracking-widest font-medium">{t("hero.scroll")}</span>
         <div className="w-[2px] h-24 bg-gradient-to-b from-primary to-transparent" />
       </motion.div>
     </section>

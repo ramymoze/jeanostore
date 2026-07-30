@@ -6,11 +6,12 @@ import { CartProvider } from "@/components/cart-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import { LayoutWrapper } from "@/components/layout-wrapper";
+import { LanguageProvider } from "@/lib/i18n-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Jeanostar - Premium Fashion",
+  title: "Silverwear - Premium Fashion",
   description: "An online store that sells clothes for the modern era.",
 };
 
@@ -28,12 +29,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <CartProvider>
-            <LayoutWrapper>
-              {children}
-            </LayoutWrapper>
-            <Toaster position="bottom-right" theme="system" />
-          </CartProvider>
+          <LanguageProvider>
+            <CartProvider>
+              <LayoutWrapper>
+                {children}
+              </LayoutWrapper>
+              <Toaster position="bottom-right" theme="system" />
+            </CartProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

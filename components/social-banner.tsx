@@ -2,8 +2,10 @@
 
 import { motion } from "framer-motion";
 import { Instagram, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function SocialBanner() {
+  const { t } = useLanguage();
   return (
     <section className="py-12 bg-primary text-primary-foreground relative overflow-hidden">
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
@@ -12,11 +14,11 @@ export function SocialBanner() {
         
         <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
            <h3 className="text-2xl md:text-3xl font-bold tracking-tight">
-             Join the inner circle.
+             {t("social.title")}
            </h3>
            <span className="hidden md:inline-block w-px h-8 bg-white/30" />
            <p className="text-foreground/80 font-medium">
-             Follow us for exclusive drops and behind-the-scenes.
+             {t("social.subtitle")}
            </p>
         </div>
 
@@ -26,7 +28,7 @@ export function SocialBanner() {
             className="flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-full font-bold hover:bg-white/90 transition-transform active:scale-95 shadow-lg shadow-black/10"
           >
             <Instagram className="w-5 h-5" />
-            <span>@jeanostar</span>
+            <span>@silverwear</span>
           </a>
           
           <a 
@@ -46,7 +48,7 @@ export function SocialBanner() {
             >
               <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
             </svg>
-            <span>@jeano_vibe</span>
+            <span>@silverwear_vibe</span>
           </a>
         </div>
 

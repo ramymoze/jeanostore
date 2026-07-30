@@ -10,8 +10,11 @@ import { Footer } from "@/components/footer";
 import { formatPrice } from "@/lib/data";
 import { useCart } from "@/components/cart-context";
 import { createClient } from "@/utils/supabase/client";
+import { useLanguage } from "@/lib/i18n-context";
+import Link from "next/link";
 
 export default function ShopPage() {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState("All");
   const [sort, setSort] = useState("Newest");
   const { addToCart } = useCart();
@@ -51,9 +54,8 @@ export default function ShopPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-4xl md:text-6xl font-bold mb-4"
         >
-          Shop <span className="text-primary">Collection</span>
+          {t("shop.title")}
         </motion.h1>
-        <p className="text-muted-foreground text-lg">Discover the future of fashion.</p>
       </div>
 
 
@@ -81,7 +83,7 @@ export default function ShopPage() {
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             />
                         )}
-                        {cat}
+                        {cat === "All" ? t("shop.all") : cat}
                         </button>
                     ))}
                 </div>
@@ -128,17 +130,17 @@ export default function ShopPage() {
                 >
                     <div className="relative aspect-[3/4] overflow-hidden bg-muted">
 
-                    <a href={`/shop/${product.id}`}>
+                    <Link href={`/shop/${product.id}`}>
                     <img 
                         src={product.image} 
                         alt={product.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 cursor-pointer"
                     />
-                    </a>
+                    </Link>
                     
                     {product.is_new && (
                         <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wider">
-                        New
+                        {t("shop.new")}
                         </div>
                     )}
 
@@ -157,9 +159,9 @@ export default function ShopPage() {
 
                     <div className="p-4">
                     <p className="text-xs text-primary font-medium mb-1">{product.category}</p>
-                    <a href={`/shop/${product.id}`} className="hover:text-primary transition-colors">
+                    <Link href={`/shop/${product.id}`} className="hover:text-primary transition-colors">
                       <h3 className="text-lg font-semibold text-foreground mb-2">{product.name}</h3>
-                    </a>
+                    </Link>
                     <p className="text-foreground/80 font-bold">{formatPrice(product.price)}</p>
                     </div>
                 </motion.div>

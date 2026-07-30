@@ -8,8 +8,10 @@ import { ShoppingCart, ArrowLeft, Star, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { useLanguage } from "@/lib/i18n-context";
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { t } = useLanguage();
   const resolvedParams = use(params);
   const productId = parseInt(resolvedParams.id, 10);
   const { addToCart } = useCart();
@@ -63,7 +65,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         <div className="mb-8">
           <Link href="/shop" className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Shop
+            {t("shop.back")}
           </Link>
         </div>
 
@@ -87,7 +89,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 />
                 {product.is_new && (
                   <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-sm font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
-                    New Arrival
+                    {t("shop.new")}
                   </div>
                 )}
               </motion.div>
@@ -113,7 +115,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     <Star className="w-5 h-5 fill-current" />
                     <Star className="w-5 h-5 fill-current" />
                     <Star className="w-5 h-5 fill-current" />
-                    <span className="text-muted-foreground ml-2 text-sm">(128 reviews)</span>
+                    <span className="text-muted-foreground ml-2 text-sm">{t("shop.reviews", { count: 128 })}</span>
                   </div>
                 </div>
 
@@ -122,9 +124,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 </p>
 
                 <div className="mb-8">
-                  <h3 className="font-medium mb-3">Select Size</h3>
+                  <h3 className="font-medium mb-3">{t("shop.selectSize")}</h3>
                   <div className="flex gap-3">
-                    {["S", "M", "L", "XL"].map((size) => (
+                    {["S", "M", "L", "XL", "XXL"].map((size) => (
                       <button 
                         key={size}
                         onClick={() => setSelectedSize(size)}
@@ -145,14 +147,14 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  Add to Cart
+                  {t("shop.addToCart")}
                 </button>
               </motion.div>
             </div>
 
             {relatedProducts.length > 0 && (
               <div className="mt-24">
-                <h2 className="text-3xl font-bold mb-8 text-center md:text-left">You Might Also Like</h2>
+                <h2 className="text-3xl font-bold mb-8 text-center md:text-left">{t("shop.related")}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {relatedProducts.map((relatedProduct) => (
                     <Link

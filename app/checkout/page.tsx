@@ -10,8 +10,10 @@ import { useState } from "react";
 
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import { useLanguage } from "@/lib/i18n-context";
 
 export default function CheckoutPage() {
+  const { t } = useLanguage();
   const { items, cartTotal, clearCart } = useCart();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,6 +31,7 @@ export default function CheckoutPage() {
       const wilaya = formData.get("wilaya") as string;
       const commune = formData.get("commune") as string;
       const adresse = formData.get("adresse") as string;
+      const delivery_mod = formData.get("delivery_mod") as string;
 
       const baseOrderId = "ORD-" + Math.floor(1000 + Math.random() * 9000);
 
@@ -47,13 +50,28 @@ export default function CheckoutPage() {
           product_pr: item.price,
           delivery_pric: 0, 
           total_price: (item.price * item.quantity),
-          delivery_mod: "Domicile",
+          delivery_mod: delivery_mod || "Domicile",
         };
       });
 
       const { error } = await supabase.from('orders').insert(orderRows);
 
       if (error) throw error;
+
+      // Sync with Google Sheets securely
+      try {
+        await fetch("/api/orders", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orders: orderRows }),
+        });
+      } catch (sheetError) {
+        console.error("Failed to sync to Google Sheets:", sheetError);
+        // We do not block checkout success if the sheet sync fails,
+        // because the order is successfully saved in Supabase.
+      }
 
       clearCart();
       router.push("/checkout/success");
@@ -85,7 +103,7 @@ export default function CheckoutPage() {
         <div className="mb-8">
           <Link href="/shop" className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Continue Shopping
+            {t("checkout.continue")}
           </Link>
         </div>
 
@@ -94,7 +112,7 @@ export default function CheckoutPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-4xl font-bold mb-10"
         >
-          Checkout
+          {t("checkout.title")}
         </motion.h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -109,19 +127,19 @@ export default function CheckoutPage() {
             <div className="bg-card border border-border/5 rounded-2xl p-6 md:p-8">
               <div className="flex items-center gap-3 mb-8 pb-4 border-b border-border/10">
                 <Truck className="w-6 h-6 text-primary" />
-                <h2 className="text-2xl font-bold">Shipping Information</h2>
+                <h2 className="text-2xl font-bold">{t("checkout.shippingInfo")}</h2>
               </div>
               
               <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-8">
                 <p className="text-sm font-medium text-primary">
-                  We currently only support <strong>Pay on Delivery</strong>. You will pay for your order when it arrives at your doorstep.
+                  {t("checkout.payOnDelivery")}
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium text-muted-foreground">Full Name</label>
+                    <label htmlFor="name" className="text-sm font-medium text-muted-foreground">{t("checkout.fullName")}</label>
                     <input 
                       required
                       type="text" 
@@ -134,7 +152,7 @@ export default function CheckoutPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label htmlFor="phone" className="text-sm font-medium text-muted-foreground">Phone Number</label>
+                      <label htmlFor="phone" className="text-sm font-medium text-muted-foreground">{t("checkout.phone")}</label>
                       <input 
                         required
                         type="tel" 
@@ -145,7 +163,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="phone_2" className="text-sm font-medium text-muted-foreground">Phone Number 2 (Optional)</label>
+                      <label htmlFor="phone_2" className="text-sm font-medium text-muted-foreground">{t("checkout.phone2")}</label>
                       <input 
                         type="tel" 
                         id="phone_2" 
@@ -158,7 +176,7 @@ export default function CheckoutPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label htmlFor="wilaya" className="text-sm font-medium text-muted-foreground">Wilaya</label>
+                      <label htmlFor="wilaya" className="text-sm font-medium text-muted-foreground">{t("checkout.wilaya")}</label>
                       <input 
                         required
                         type="text" 
@@ -169,7 +187,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="commune" className="text-sm font-medium text-muted-foreground">Commune</label>
+                      <label htmlFor="commune" className="text-sm font-medium text-muted-foreground">{t("checkout.commune")}</label>
                       <input 
                         required
                         type="text" 
@@ -182,7 +200,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="adresse" className="text-sm font-medium text-muted-foreground">Shipping Address</label>
+                    <label htmlFor="adresse" className="text-sm font-medium text-muted-foreground">{t("checkout.address")}</label>
                     <input 
                       required
                       type="text" 
@@ -191,6 +209,20 @@ export default function CheckoutPage() {
                       className="w-full bg-background/40 border border-border/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
                       placeholder="123 Main St, Apt 4B"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">{t("checkout.deliveryMode")}</label>
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+                      <label className="flex items-center gap-3 p-4 border border-border/10 rounded-xl cursor-pointer hover:border-primary/50 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                        <input type="radio" name="delivery_mod" value="Bureau" className="accent-primary" required />
+                        <span className="font-medium">{t("checkout.bureau")}</span>
+                      </label>
+                      <label className="flex items-center gap-3 p-4 border border-border/10 rounded-xl cursor-pointer hover:border-primary/50 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                        <input type="radio" name="delivery_mod" value="Domicile" className="accent-primary" defaultChecked required />
+                        <span className="font-medium">{t("checkout.domicile")}</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
@@ -206,7 +238,7 @@ export default function CheckoutPage() {
                       className="w-5 h-5 border-2 border-border/30 border-t-white rounded-full"
                     />
                   ) : (
-                    <>Place Order (Pay on Delivery)</>
+                    <>{t("checkout.placeOrder")}</>
                   )}
                 </button>
               </form>
@@ -221,7 +253,7 @@ export default function CheckoutPage() {
             className="lg:col-span-5"
           >
             <div className="bg-background/40 backdrop-blur-md border border-border/10 rounded-2xl p-6 md:p-8 sticky top-32">
-              <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+              <h2 className="text-2xl font-bold mb-6">{t("summary.title")}</h2>
               
               <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 scrollbar-hide">
                 {items.map(item => (
@@ -231,7 +263,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium text-sm text-foreground">{item.name}</h4>
-                      <p className="text-xs text-muted-foreground mb-1">Qty: {item.quantity}</p>
+                      <p className="text-xs text-muted-foreground mb-1">{t("summary.qty")}: {item.quantity}</p>
                       <p className="font-bold text-sm">{formatPrice(item.price * item.quantity)}</p>
                     </div>
                   </div>
@@ -240,15 +272,15 @@ export default function CheckoutPage() {
 
               <div className="border-t border-border/10 pt-4 space-y-3">
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Subtotal</span>
+                  <span>{t("summary.subtotal")}</span>
                   <span>{formatPrice(cartTotal)}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Shipping</span>
-                  <span>Free</span>
+                  <span>{t("summary.shipping")}</span>
+                  <span>{t("summary.free")}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold text-foreground pt-3 border-t border-border/10">
-                  <span>Total</span>
+                  <span>{t("summary.total")}</span>
                   <span className="text-primary">{formatPrice(cartTotal)}</span>
                 </div>
               </div>
