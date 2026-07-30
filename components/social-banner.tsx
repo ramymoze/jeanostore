@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Instagram, ArrowRight } from "lucide-react";
+import { Instagram, Facebook, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n-context";
 
 export function SocialBanner() {
@@ -31,6 +31,16 @@ export function SocialBanner() {
           >
             <Instagram className="w-5 h-5" />
             <span>@silverwear_dz</span>
+          </a>
+          
+          <a 
+            href="https://www.facebook.com/share/1912fhK8cv/?mibextid=wwXIfr" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-6 py-3 bg-white text-primary rounded-full font-bold hover:bg-white/90 transition-transform active:scale-95 shadow-lg shadow-black/10"
+          >
+            <Facebook className="w-5 h-5" />
+            <span>Silverwear</span>
           </a>
           
           <a 

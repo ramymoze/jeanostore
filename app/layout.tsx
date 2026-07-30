@@ -38,7 +38,7 @@ export default function RootLayout({
               <LayoutWrapper>
                 {children}
               </LayoutWrapper>
-              <Toaster position="bottom-right" theme="system" />
+              <Toaster position="top-left" theme="system" />
             </CartProvider>
           </LanguageProvider>
         </ThemeProvider>

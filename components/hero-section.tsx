@@ -30,7 +30,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
+          className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-foreground"
         >
           Silver<span className="text-primary">wear</span>
         </motion.h1>

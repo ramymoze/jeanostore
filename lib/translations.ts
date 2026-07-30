@@ -61,7 +61,7 @@ export const translations: Record<string, Record<string, string>> = {
     "success.title": "Order Confirmed!",
     "success.message": "Thank you for your purchase. We've received your order and are getting it ready to be shipped. Remember, you will pay upon delivery.",
     "success.estDelivery": "Estimated Delivery",
-    "success.deliveryTime": "2 - 3  Business Days",
+    "success.deliveryTime": "2 - 3 Business Days",
     "success.continue": "Continue Shopping",
 
     // Cart
@@ -131,7 +131,7 @@ export const translations: Record<string, Record<string, string>> = {
     "success.title": "تم تأكيد الطلب!",
     "success.message": "شكراً لتسوقكم. لقد تلقينا طلبكم ونقوم بتجهيزه للشحن. تذكر، الدفع سيكون عند الاستلام.",
     "success.estDelivery": "التوصيل المتوقع",
-    "success.deliveryTime": "2 - 3 ; 3-5 أيام عمل",
+    "success.deliveryTime": "2 - 3 أيام عمل",
     "success.continue": "مواصلة التسوق",
 
     // Cart
