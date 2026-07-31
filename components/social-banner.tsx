@@ -22,7 +22,7 @@ export function SocialBanner() {
            </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap justify-center items-center gap-4">
           <a 
             href="https://www.instagram.com/silverwear_dz?igsh=MTluYzltNm1ydjI1dg%3D%3D&utm_source=qr" 
             target="_blank"

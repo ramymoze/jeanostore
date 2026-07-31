@@ -37,7 +37,7 @@ const categories = [
 export function FeaturedCategories() {
   return (
     <section id="collections" className="py-24 px-4 md:px-6 bg-background relative overflow-hidden">
-      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none hidden md:block" />
 
       <div className="container mx-auto">
         <motion.div 

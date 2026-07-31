@@ -11,7 +11,7 @@ export function HeroSection() {
   return (
     <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-background to-background">
       <div className="absolute inset-0 w-full h-full bg-grid-white/[0.02] -z-10" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 rounded-full blur-[120px] -z-10 opacity-50 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 rounded-full blur-[64px] md:blur-[120px] -z-10 opacity-50 pointer-events-none" />
 
       <div className="container px-4 md:px-6 relative z-10 text-center">
         <motion.div

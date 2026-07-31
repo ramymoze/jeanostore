@@ -57,9 +57,9 @@ export function Navbar() {
            animate={{ opacity: 1, x: 0 }}
            transition={{ delay: 0.4, duration: 0.5 }}
         >
-          <Link href="/" className="text-2xl font-bold tracking-tighter flex items-center gap-2 group">
+          <Link href="/" className="text-xl md:text-2xl font-bold tracking-tighter flex items-center gap-2 group shrink-0">
             <img src="/logo.png" alt="Silverwear Logo" className="w-8 h-8 rounded-full object-cover shadow-sm" />
-            <div className="text-foreground">Silver<span className="text-primary group-hover:text-foreground transition-colors">wear</span></div>
+            <div className="text-foreground hidden sm:block">Silver<span className="text-primary group-hover:text-foreground transition-colors">wear</span></div>
           </Link>
         </motion.div>
 
@@ -83,7 +83,7 @@ export function Navbar() {
         </div>
 
         <motion.div 
-          className="flex items-center gap-4"
+          className="flex items-center gap-1 md:gap-4 shrink-0"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
