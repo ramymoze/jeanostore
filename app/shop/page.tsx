@@ -138,11 +138,15 @@ export default function ShopPage() {
                     />
                     </Link>
                     
-                    {product.is_new && (
-                        <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wider">
-                        {t("shop.new")}
-                        </div>
-                    )}
+                    {product.sold_out ? (
+                    <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg uppercase tracking-wider">
+                      {t("shop.soldOut") || "Sold Out"}
+                    </div>
+                  ) : product.is_new ? (
+                    <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-full shadow-lg uppercase tracking-wider">
+                      {t("shop.new")}
+                    </div>
+                  ) : null}
 
                     <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/80 to-transparent flex justify-between items-center z-10">
                         <button className="p-2 bg-white/10 hover:bg-primary text-primary-foreground rounded-full backdrop-blur-md transition-colors">

@@ -6,18 +6,19 @@ import { useCart } from "@/components/cart-context";
 import { motion } from "framer-motion";
 import { ShoppingCart, ArrowLeft, Star, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useLanguage } from "@/lib/i18n-context";
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const { t } = useLanguage();
+  const router = useRouter();
+  const { t, setLanguage } = useLanguage();
   const resolvedParams = use(params);
   const productId = parseInt(resolvedParams.id, 10);
   const { addToCart } = useCart();
   const [selectedSize, setSelectedSize] = useState("M");
-  
   const [product, setProduct] = useState<any>(null);
+  const [selectedImage, setSelectedImage] = useState<string>("");
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -55,6 +56,17 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     fetchData();
   }, [productId, supabase]);
 
+  // Update selected image when product loads
+  useEffect(() => {
+    if (product) {
+      if (product.images && product.images.length > 0) {
+        setSelectedImage(product.images[0]);
+      } else if (product.image) {
+        setSelectedImage(product.image);
+      }
+    }
+  }, [product]);
+
   if (!loading && !product) {
     return notFound();
   }
@@ -83,13 +95,29 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 className="relative aspect-[3/4] md:aspect-[4/5] rounded-2xl overflow-hidden bg-muted"
               >
                 <img 
-                  src={product.image} 
+                  src={selectedImage || product.image} 
                   alt={product.name} 
                   className="w-full h-full object-cover"
                 />
-                {product.is_new && (
-                  <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-sm font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                {product.sold_out ? (
+                  <div className="absolute top-4 left-4 bg-red-500 text-white text-sm font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                    {t("shop.soldOut") || "Sold Out"}
+                  </div>
+                ) : product.is_new ? (
+                  <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-sm font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
                     {t("shop.new")}
+                  </div>
+                ) : null}
+                {/* Image thumbnails if multiple images exist */}
+                {product.images && product.images.length > 1 && (
+                  <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                    {product.images.map((img: string, idx: number) => (
+                      <button key={idx} type="button" onClick={() => setSelectedImage(img)}
+                        className={`w-12 h-12 rounded border ${selectedImage === img ? 'border-primary' : 'border-transparent'} overflow-hidden`}
+                      >
+                        <img src={img} alt={`${product.name} ${idx}`} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
                   </div>
                 )}
               </motion.div>
@@ -144,10 +172,15 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
                 <button 
                   onClick={() => addToCart(product)}
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                  disabled={product.sold_out}
+                  className={`w-full font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all ${
+                    product.sold_out 
+                      ? "bg-muted text-muted-foreground cursor-not-allowed opacity-70" 
+                      : "bg-primary hover:bg-primary/90 text-primary-foreground active:scale-[0.98]"
+                  }`}
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  {t("shop.addToCart")}
+                  {product.sold_out ? (t("shop.soldOut") || "Sold Out") : t("shop.addToCart")}
                 </button>
               </motion.div>
             </div>
@@ -164,7 +197,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     >
                       <div className="aspect-[3/4] relative bg-muted overflow-hidden">
                         <img 
-                          src={relatedProduct.image} 
+                          src={relatedProduct.images && relatedProduct.images.length > 0 ? relatedProduct.images[0] : relatedProduct.image} 
                           alt={relatedProduct.name} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />

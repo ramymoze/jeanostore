@@ -4,9 +4,59 @@ import { useCart } from "@/components/cart-context";
 import { formatPrice } from "@/lib/data";
 import { motion } from "framer-motion";
 import { ArrowLeft, Truck, PackageCheck } from "lucide-react";
+
+// Delivery price mapping per wilaya (prices in DZD)
+const DELIVERY_RATES: Record<string, { domicile: number; bureau: number }> = {
+  "Adrar": { domicile: 1400, bureau: 1000 },
+  "Chlef": { domicile: 800, bureau: 500 },
+  "Laghouat": { domicile: 900, bureau: 700 },
+  "Oum El Bouaghi": { domicile: 700, bureau: 500 },
+  "Batna": { domicile: 700, bureau: 500 },
+  "Béjaïa": { domicile: 700, bureau: 500 },
+  "Biskra": { domicile: 900, bureau: 600 },
+  "Béchar": { domicile: 1100, bureau: 700 },
+  "Blida": { domicile: 750, bureau: 500 },
+  "Bouira": { domicile: 750, bureau: 500 },
+  "Tamanrasset": { domicile: 1600, bureau: 1100 },
+  "Tébessa": { domicile: 800, bureau: 500 },
+  "Tlemcen": { domicile: 900, bureau: 600 },
+  "Tiaret": { domicile: 800, bureau: 500 },
+  "Tizi Ouzou": { domicile: 700, bureau: 500 },
+  "Alger": { domicile: 600, bureau: 500 },
+  "Djelfa": { domicile: 900, bureau: 600 },
+  "Jijel": { domicile: 700, bureau: 500 },
+  "Sétif": { domicile: 700, bureau: 500 },
+  "Saïda": { domicile: 800, bureau: 600 },
+  "Skikda": { domicile: 700, bureau: 500 },
+  "Sidi Bel Abbès": { domicile: 800, bureau: 500 },
+  "Annaba": { domicile: 500, bureau: 400 },
+  "Guelma": { domicile: 700, bureau: 500 },
+  "Constantine": { domicile: 700, bureau: 500 },
+  "Médéa": { domicile: 800, bureau: 500 },
+  "Mostaganem": { domicile: 800, bureau: 500 },
+  "M'Sila": { domicile: 800, bureau: 500 },
+  "Mascara": { domicile: 800, bureau: 500 },
+  "Ouargla": { domicile: 1000, bureau: 700 },
+  "Oran": { domicile: 800, bureau: 500 },
+  "El Bayadh": { domicile: 1000, bureau: 700 },
+  "Bordj Bou Arreridj": { domicile: 700, bureau: 500 },
+  "Boumerdès": { domicile: 800, bureau: 500 },
+  "El Tarf": { domicile: 600, bureau: 500 },
+  "Naâma": { domicile: 1100, bureau: 700 },
+  "Aïn Témouchent": { domicile: 800, bureau: 500 },
+  "Ghardaïa": { domicile: 1000, bureau: 700 },
+  "Relizane": { domicile: 800, bureau: 500 },
+  "Timimoun": { domicile: 1400, bureau: 0 },
+  "Ouled Djellal": { domicile: 900, bureau: 700 },
+  "Béni Abbès": { domicile: 1000, bureau: 900 },
+  "Touggourt": { domicile: 1000, bureau: 800 },
+  "El M'Ghair": { domicile: 900, bureau: 0 },
+  "El Meniaa": { domicile: 1000, bureau: 0 },
+};
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -17,7 +67,14 @@ export default function CheckoutPage() {
   const { items, cartTotal, clearCart } = useCart();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedWilaya, setSelectedWilaya] = useState("");
+  const [selectedDeliveryMod, setSelectedDeliveryMod] = useState("Domicile");
   const supabase = createClient();
+
+  const currentDeliveryCost = useMemo(() => {
+    const foundWilaya = Object.keys(DELIVERY_RATES).find(k => k.toLowerCase() === selectedWilaya.toLowerCase().trim());
+    return foundWilaya ? DELIVERY_RATES[foundWilaya][selectedDeliveryMod.toLowerCase() as 'domicile' | 'bureau'] : 0;
+  }, [selectedWilaya, selectedDeliveryMod]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,6 +92,8 @@ export default function CheckoutPage() {
 
       const baseOrderId = "ORD-" + Math.floor(1000 + Math.random() * 9000);
 
+      const deliveryCost = currentDeliveryCost;
+
       const orderRows = items.map((item, index) => {
         return {
           order_id: items.length > 1 ? `${baseOrderId}-${index + 1}` : baseOrderId,
@@ -48,8 +107,8 @@ export default function CheckoutPage() {
           product_var: item.category || "Standard",
           quantity: item.quantity,
           product_pr: item.price,
-          delivery_pric: 0,
-          total_price: (item.price * item.quantity),
+          delivery_pric: deliveryCost,
+          total_price: (item.price * item.quantity) + deliveryCost,
           delivery_mod: delivery_mod || "Domicile",
         };
       });
@@ -193,9 +252,17 @@ export default function CheckoutPage() {
                         type="text" 
                         id="wilaya" 
                         name="wilaya"
+                        list="wilayas-list"
+                        value={selectedWilaya}
+                        onChange={(e) => setSelectedWilaya(e.target.value)}
                         className="w-full bg-background/40 border border-border/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
-                        placeholder="Annaba"
+                        placeholder="Type or select a wilaya..."
                       />
+                      <datalist id="wilayas-list">
+                        {Object.keys(DELIVERY_RATES).map((w) => (
+                          <option key={w} value={w} />
+                        ))}
+                      </datalist>
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="commune" className="text-sm font-medium text-muted-foreground">{t("checkout.commune")}</label>
@@ -205,7 +272,7 @@ export default function CheckoutPage() {
                         id="commune" 
                         name="commune"
                         className="w-full bg-background/40 border border-border/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
-                        placeholder="Sidi Amar"
+                        placeholder="Type your commune..."
                       />
                     </div>
                   </div>
@@ -226,11 +293,11 @@ export default function CheckoutPage() {
                     <label className="text-sm font-medium text-muted-foreground">{t("checkout.deliveryMode")}</label>
                     <div className="grid grid-cols-2 gap-4 mt-2">
                       <label className="flex items-center gap-3 p-4 border border-border/10 rounded-xl cursor-pointer hover:border-primary/50 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                        <input type="radio" name="delivery_mod" value="Bureau" className="accent-primary" required />
+                        <input type="radio" name="delivery_mod" value="Bureau" checked={selectedDeliveryMod === "Bureau"} onChange={(e) => setSelectedDeliveryMod(e.target.value)} className="accent-primary" required />
                         <span className="font-medium">{t("checkout.bureau")}</span>
                       </label>
                       <label className="flex items-center gap-3 p-4 border border-border/10 rounded-xl cursor-pointer hover:border-primary/50 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                        <input type="radio" name="delivery_mod" value="Domicile" className="accent-primary" defaultChecked required />
+                        <input type="radio" name="delivery_mod" value="Domicile" checked={selectedDeliveryMod === "Domicile"} onChange={(e) => setSelectedDeliveryMod(e.target.value)} className="accent-primary" required />
                         <span className="font-medium">{t("checkout.domicile")}</span>
                       </label>
                     </div>
@@ -288,11 +355,11 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>{t("summary.shipping")}</span>
-                  <span>{t("summary.free")}</span>
+                  <span>{currentDeliveryCost > 0 ? formatPrice(currentDeliveryCost) : "---"}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold text-foreground pt-3 border-t border-border/10">
                   <span>{t("summary.total")}</span>
-                  <span className="text-primary">{formatPrice(cartTotal)}</span>
+                  <span className="text-primary">{formatPrice(cartTotal + currentDeliveryCost)}</span>
                 </div>
               </div>
             </div>
