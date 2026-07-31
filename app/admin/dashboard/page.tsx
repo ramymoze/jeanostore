@@ -9,8 +9,6 @@ import {
   ShoppingCart, PlusCircle, Search, Upload, Loader2, Trash2, Pencil, X, ChevronLeft, ChevronRight
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { useCart } from "@/lib/cart-context";
-
 type TabState = "products" | "add-product" | "edit-product" | "orders" | "customers";
 
 export default function AdminDashboard() {
